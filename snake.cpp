@@ -323,11 +323,18 @@ public:
 		}
 		return correct;
 	};
+
+	void EraseSnake()
+	{
+		for (coordinates n : snake)
+		{
+			field[n.x][n.y] = fieldUnit;
+		}
+	}
 	private:
 		void EraseTail()
 		{
 			coordinates tail = snake.back();
-			field[tail.x][tail.y] = fieldUnit;
 			snake.pop_back();
 		}
 		void CheckEatHimself()
@@ -398,15 +405,15 @@ public:
 				}
 				else if (head.y == width - 1)
 				{
-					if (field[head.x + 1][head.y] != snakeUnit)
-					{
-						direction = downButton;
-						newHead = { head.x + 1, head.y };
-					}
-					else if (field[head.x][head.y - 1] != snakeUnit)
+					if (field[head.x][head.y - 1] != snakeUnit)
 					{
 						direction = leftButton;
 						newHead = { head.x, head.y - 1 };
+					}
+					else if (field[head.x + 1][head.y] != snakeUnit)
+					{
+						direction = downButton;
+						newHead = { head.x + 1, head.y };
 					}
 					else
 					{
@@ -440,15 +447,15 @@ public:
 			{
 				if (head.y == 0)
 				{
-					if (field[head.x - 1][head.y] != snakeUnit)
-					{
-						direction = upButton;
-						newHead = { head.x - 1, head.y };
-					}
-					else if (field[head.x][head.y + 1] != snakeUnit)
+					if (field[head.x][head.y + 1] != snakeUnit)
 					{
 						direction = rightButton;
 						newHead = { head.x, head.y + 1 };
+					}
+					else if (field[head.x - 1][head.y] != snakeUnit)
+					{
+						direction = upButton;
+						newHead = { head.x - 1, head.y };
 					}
 					else
 					{
@@ -586,14 +593,18 @@ int main()
 				{
 					game.direction = button;
 				}
+				game.EraseSnake();
 				game.MoveSnakeCheckLunch();
+				game.PlacingSnake();
 				if (game.lunch) { game.PlantApple(); };
 			}
 		}
 		else
 		{
 			game.lunch = false;
+			game.EraseSnake();
 			game.MoveSnakeCheckLunch();
+			game.PlacingSnake();
 			if (game.lunch) { game.PlantApple(); };
 		}
 		if (game.gameStatus != "run")
