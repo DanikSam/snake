@@ -36,8 +36,9 @@ public:
 	bool lunch;
 	int width;
 	int height;
-	void initField()
+	vector<vector<char>> InitField(int height, int width)
 	{
+		vector<vector<char>> field;
 		for (int i{ 0 }; i < height; i++)//инициализация поля
 		{
 			vector<char> row;
@@ -47,23 +48,24 @@ public:
 			}
 			field.push_back(row);
 		}
+		return field;
 	}
-	void printField()
+	void PrintField()
 	{
-		for (int i{ 0 }; i < height; i++)//вывод поля
+		for (vector<char> row : field)
 		{
-			for (int j{ 0 }; j < width; j++)
+			for (char unit : row)
 			{
-				cout << field[i][j] << ' ';
+				cout << unit << ' ';
 			}
 			cout << endl;
 		}
 	}
-	void plantApple()
+	void PlantApple()
 	{
 		bool applePlanted = false;
 		coordinates apple;
-		vector<coordinates> freeCells = getFreeCells();
+		vector<coordinates> freeCells = GetFreeCells();
 		while (applePlanted != true && !freeCells.empty())
 		{
 			apple.x = 0 + rand() % height;
@@ -81,7 +83,7 @@ public:
 			field[apple.x][apple.y] = appleUnit;
 		}
 	}
-	void initSnake()
+	void InitSnake()
 	{
 		int x = height / 2;
 		int y = width / 2;
@@ -91,7 +93,7 @@ public:
 		coordinates tale{ x,y };
 		snake.push_back(tale);
 	}
-	void placingSnake()
+	void PlacingSnake()
 	{
 		for (coordinates n : snake) //отображение змейки
 		{
@@ -100,7 +102,7 @@ public:
 		coordinates snakeHead{ snake.front() };
 		field[snakeHead.x][snakeHead.y] = snakeHeadUnit;
 	}
-	void moveSnakeCheckLunch()
+	void MoveSnakeCheckLunch()
 	{
 		deque<coordinates> newSnakePosition;
 		coordinates newHeadPosition{ snake.front() };
@@ -129,7 +131,7 @@ public:
 					else if (level == "hard")
 					{
 						direction = downButton;
-						eraseTail();
+						EraseTail();
 						if (newHeadPosition.x + 1 >= height)
 						{
 							gameStatus = "Game over. No way to move";
@@ -140,7 +142,7 @@ public:
 					}
 					else if (level == "hard+")
 					{
-						newHeadPosition = checkFreeWayAndMove(newHeadPosition);
+						newHeadPosition = CheckFreeWayAndMove(newHeadPosition);
 					}
 				}
 			}
@@ -168,7 +170,7 @@ public:
 					else if (level == "hard")
 					{
 						direction = upButton;
-						eraseTail();
+						EraseTail();
 						if (newHeadPosition.x - 1 < 0)
 						{
 							gameStatus = "Game over. No way to move";
@@ -179,7 +181,7 @@ public:
 					}
 					else if (level == "hard+")
 					{
-						newHeadPosition = checkFreeWayAndMove(newHeadPosition);
+						newHeadPosition = CheckFreeWayAndMove(newHeadPosition);
 					}
 				}
 			} 
@@ -207,7 +209,7 @@ public:
 					else if (level == "hard")
 					{
 						direction = leftButton;
-						eraseTail();
+						EraseTail();
 						if (newHeadPosition.y - 1 < 0)
 						{
 							gameStatus = "Game over. No way to move";
@@ -218,7 +220,7 @@ public:
 					}
 					else if (level == "hard+")
 					{
-						newHeadPosition = checkFreeWayAndMove(newHeadPosition);
+						newHeadPosition = CheckFreeWayAndMove(newHeadPosition);
 					}
 				}
 			} 
@@ -246,7 +248,7 @@ public:
 					else if (level == "hard")
 					{
 						direction = rightButton;
-						eraseTail();
+						EraseTail();
 						if (newHeadPosition.y + 1 >= width)
 						{
 							gameStatus = "Game over. No way to move";
@@ -257,7 +259,7 @@ public:
 					}
 					else if (level == "hard+")
 					{
-						newHeadPosition = checkFreeWayAndMove(newHeadPosition);
+						newHeadPosition = CheckFreeWayAndMove(newHeadPosition);
 					}
 				}
 			} 
@@ -272,16 +274,16 @@ public:
 		snake = newSnakePosition;
 		if (!(field[newHeadPosition.x][newHeadPosition.y] == appleUnit))
 		{
-			eraseTail();
+			EraseTail();
 		}
 		else { lunch = true; };
 		field[newHeadPosition.x][newHeadPosition.y] = snakeHeadUnit;
 		if (gameStatus == "run")
 		{
-			checkEatHimself();
+			CheckEatHimself();
 		};
 	}
-	bool correctButton(int button)
+	bool CorrectButton(int button)
 	{
 		bool correct = true;
 		switch (button)
@@ -322,13 +324,13 @@ public:
 		return correct;
 	};
 	private:
-		void eraseTail()
+		void EraseTail()
 		{
 			coordinates tail = snake.back();
 			field[tail.x][tail.y] = fieldUnit;
 			snake.pop_back();
 		}
-		void checkEatHimself()
+		void CheckEatHimself()
 		{
 			bool eatHimself = true;
 			coordinates head = snake.front();
@@ -351,7 +353,7 @@ public:
 				gameStatus = "Game over. Snake eat himself";
 			}
 		}
-		vector<coordinates> getFreeCells()
+		vector<coordinates> GetFreeCells()
 		{
 			vector<coordinates> freeCells;
 			for (int i{ 0 }; i < height; i++)
@@ -371,15 +373,15 @@ public:
 			}
 			return freeCells;
 		}
-		coordinates checkFreeWayAndMove(coordinates head)
+		coordinates CheckFreeWayAndMove(coordinates head)
 		{
 			coordinates newHead = head;
-			eraseTail();
+			EraseTail();
 			if (head.x == 0)
 			{
 				if (head.y == 0)
 				{
-					if (field[head.x+1][head.y] != snakeUnit)
+					if (field[head.x + 1][head.y] != snakeUnit)
 					{
 						direction = downButton;
 						newHead = { head.x + 1, head.y };
@@ -549,18 +551,22 @@ int main()
 	Game game;
 	game.height = fieldSize.y;
 	game.width = fieldSize.x;
-	game.initField();
-	game.initSnake();
-	game.placingSnake();
-	game.plantApple();
+	game.field = game.InitField(game.height, game.width);
+	game.InitSnake();
+	game.PlacingSnake();
+	game.PlantApple();
 	game.gameStatus = "run";
 	game.direction = rightButton;
 	game.speed = gameSpeed;
 	game.level = gameLevel;
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD position;
+	position.X = 0;
+	position.Y = 0;
 	while (game.gameStatus == "run")
 	{
-		system("cls");
-		game.printField();
+		SetConsoleCursorPosition(hConsole, position);
+		game.PrintField();
 		Sleep(game.speed);
 		if (_kbhit())
 		{
@@ -571,30 +577,29 @@ int main()
 			}
 			if (button == spaceButton)
 			{
-				cout << "space " << endl;
 				game.gameStatus = "end";
 			}
 			else if (arrows.count(button))
 			{
 				game.lunch = false;
-				if (game.correctButton(button))
+				if (game.CorrectButton(button))
 				{
 					game.direction = button;
 				}
-				game.moveSnakeCheckLunch();
-				if (game.lunch) { game.plantApple(); };
+				game.MoveSnakeCheckLunch();
+				if (game.lunch) { game.PlantApple(); };
 			}
 		}
 		else
 		{
 			game.lunch = false;
-			game.moveSnakeCheckLunch();
-			if (game.lunch) { game.plantApple(); };
+			game.MoveSnakeCheckLunch();
+			if (game.lunch) { game.PlantApple(); };
 		}
 		if (game.gameStatus != "run")
 		{
-			system("cls");
-			game.printField();
+			SetConsoleCursorPosition(hConsole, position);
+			game.PrintField();
 			cout << game.gameStatus << endl;
 		}
 	}
